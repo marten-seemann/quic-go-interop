@@ -1,5 +1,8 @@
 version: 2.1
 executors:
+  test:
+    docker:
+      - image: "circleci/golang:1.13"
   docker-publisher:
     environment:
       IMAGE_NAME: martenseemann/quic-go-interop
@@ -7,6 +10,17 @@ executors:
       - image: circleci/buildpack-deps:stretch
 
 jobs:
+  test:
+    executor: test
+    steps:
+      - checkout
+      - run:
+          name: "Run tests"
+          command: |
+            cd interop/http09/
+            go get github.com/onsi/ginkgo/ginkgo
+            go get github.com/onsi/gomega
+            ginkgo -race -r -v -randomizeAllSpecs -trace
   build:
     executor: docker-publisher
     steps:
@@ -43,7 +57,10 @@ workflows:
   version: 2
   build-master:
     jobs:
-      - build
+      - test
+      - build:
+          requires:
+            - test
       - publish:
           requires:
             - build

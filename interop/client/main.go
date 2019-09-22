@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 
@@ -13,6 +14,13 @@ import (
 )
 
 func main() {
+	logFile, err := os.Create("/logs/log.txt")
+	if err != nil {
+		panic(fmt.Sprintf("Could not create log file: %s", err.Error()))
+	}
+	defer logFile.Close()
+	log.SetOutput(logFile)
+
 	flag.Parse()
 	urls := flag.Args()
 

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net"
 	"net/http"
 	"os"
@@ -23,6 +24,13 @@ func init() {
 }
 
 func main() {
+	logFile, err := os.Create("/logs/log.txt")
+	if err != nil {
+		panic(fmt.Sprintf("Could not create log file: %s", err.Error()))
+	}
+	defer logFile.Close()
+	log.SetOutput(logFile)
+
 	testcase := os.Getenv("TESTCASE")
 	var quicConf *quic.Config
 	switch testcase {

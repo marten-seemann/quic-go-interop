@@ -10,6 +10,7 @@ ENV PATH="/go/bin:${PATH}"
 
 WORKDIR /quic-go-interop
 ADD interop/go.* /quic-go-interop/
+ADD interop/http09 /quic-go-interop/http09
 ADD interop/client /quic-go-interop/client
 ADD interop/server /quic-go-interop/server
 

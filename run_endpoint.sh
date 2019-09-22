@@ -12,7 +12,6 @@ if [ "$ROLE" == "client" ]; then
     echo "Test case: $TESTCASE"
     go run client/main.go $CLIENT_PARAMS
 else
-    echo "Running QUIC server on 0.0.0.0:4433"
-    echo "$@"
+    echo "Running QUIC server."
     go run server/main.go "$@"
 fi

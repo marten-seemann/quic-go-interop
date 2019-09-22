@@ -9,7 +9,7 @@ import (
 	"runtime"
 
 	"github.com/lucas-clemente/quic-go"
-	"github.com/lucas-clemente/quic-go/http3"
+	"github.com/marten-seemann/quic-go-interop/http09"
 )
 
 var path string
@@ -42,10 +42,6 @@ func main() {
 }
 
 func runServer(quicConf *quic.Config) error {
-	server := http3.Server{
-		Server:     &http.Server{Addr: "0.0.0.0:443"},
-		QuicConfig: quicConf,
-	}
 	http.DefaultServeMux.Handle("/", http.FileServer(http.Dir("/www")))
-	return server.ListenAndServeTLS(path+"/cert.pem", path+"/key.pem")
+	return http09.ListenAndServeQUIC("0.0.0.0:443", path+"/cert.pem", path+"/key.pem", nil)
 }

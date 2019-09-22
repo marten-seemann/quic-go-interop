@@ -16,7 +16,8 @@ import (
 func main() {
 	logFile, err := os.Create("/logs/log.txt")
 	if err != nil {
-		panic(fmt.Sprintf("Could not create log file: %s", err.Error()))
+		fmt.Printf("Could not create log file: %s\n", err.Error())
+		os.Exit(1)
 	}
 	defer logFile.Close()
 	log.SetOutput(logFile)
@@ -45,7 +46,8 @@ func main() {
 		})
 	}
 	if err := g.Wait(); err != nil {
-		panic(err)
+		fmt.Printf("Downloading files failed: %s\n", err.Error())
+		os.Exit(1)
 	}
 }
 

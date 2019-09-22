@@ -18,7 +18,8 @@ var path string
 func init() {
 	_, filename, _, ok := runtime.Caller(0)
 	if !ok {
-		panic("runtime.Caller failed")
+		fmt.Println("runtime.Caller failed")
+		os.Exit(1)
 	}
 	path = filepath.Dir(filename)
 }
@@ -26,7 +27,8 @@ func init() {
 func main() {
 	logFile, err := os.Create("/logs/log.txt")
 	if err != nil {
-		panic(fmt.Sprintf("Could not create log file: %s", err.Error()))
+		fmt.Printf("Could not create log file: %s\n", err.Error())
+		os.Exit(1)
 	}
 	defer logFile.Close()
 	log.SetOutput(logFile)
@@ -46,7 +48,8 @@ func main() {
 	}
 
 	if err := runServer(quicConf); err != nil {
-		panic(err)
+		fmt.Printf("Error running server: %s\n", err.Error())
+		os.Exit(1)
 	}
 }
 

@@ -51,6 +51,18 @@ func (r *RoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 	return c.RoundTrip(req)
 }
 
+func (r *RoundTripper) Close() error {
+	r.mutex.Lock()
+	defer r.mutex.Unlock()
+
+	for _, c := range r.clients {
+		if err := c.Close(); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 type client struct {
 	hostname string
 	tlsConf  *tls.Config
@@ -91,6 +103,10 @@ func (c *client) doRequest(req *http.Request) (*http.Response, error) {
 		Body:       ioutil.NopCloser(str),
 	}
 	return rsp, nil
+}
+
+func (c *client) Close() error {
+	return c.sess.Close()
 }
 
 func hostnameFromRequest(req *http.Request) string {

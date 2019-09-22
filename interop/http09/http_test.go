@@ -51,6 +51,7 @@ var _ = Describe("HTTP 0.9 integration tests", func() {
 
 	It("performs request", func() {
 		rt := &RoundTripper{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}
+		defer rt.Close()
 		req := httptest.NewRequest(
 			http.MethodGet,
 			fmt.Sprintf("https://%s/helloworld", saddr),
@@ -71,6 +72,7 @@ var _ = Describe("HTTP 0.9 integration tests", func() {
 		})
 
 		rt := &RoundTripper{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}
+		defer rt.Close()
 		req := httptest.NewRequest(
 			http.MethodGet,
 			fmt.Sprintf("https://%s/headers", saddr),

@@ -19,11 +19,11 @@ var _ = Describe("HTTP 0.9 integration tests", func() {
 		done   chan struct{}
 	)
 
-	BeforeEach(func() {
-		http.HandleFunc("/helloworld", func(w http.ResponseWriter, r *http.Request) {
-			_, _ = w.Write([]byte("Hello World!"))
-		})
+	http.HandleFunc("/helloworld", func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write([]byte("Hello World!"))
+	})
 
+	BeforeEach(func() {
 		tlsConf, err := getTLSConfig()
 		Expect(err).ToNot(HaveOccurred())
 		server = &Server{
@@ -61,5 +61,25 @@ var _ = Describe("HTTP 0.9 integration tests", func() {
 		data, err := ioutil.ReadAll(rsp.Body)
 		Expect(err).ToNot(HaveOccurred())
 		Expect(data).To(Equal([]byte("Hello World!")))
+	})
+
+	It("allows setting of headers", func() {
+		http.HandleFunc("/headers", func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Add("foo", "bar")
+			w.WriteHeader(1337)
+			_, _ = w.Write([]byte("done"))
+		})
+
+		rt := &RoundTripper{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}
+		req := httptest.NewRequest(
+			http.MethodGet,
+			fmt.Sprintf("https://%s/headers", saddr),
+			nil,
+		)
+		rsp, err := rt.RoundTrip(req)
+		Expect(err).ToNot(HaveOccurred())
+		data, err := ioutil.ReadAll(rsp.Body)
+		Expect(err).ToNot(HaveOccurred())
+		Expect(data).To(Equal([]byte("done")))
 	})
 })

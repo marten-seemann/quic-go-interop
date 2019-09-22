@@ -18,12 +18,18 @@ import (
 
 const h09alpn = "h09"
 
-type responseWriter struct{ io.Writer }
+type responseWriter struct {
+	io.Writer
+	headers http.Header
+}
 
 var _ http.ResponseWriter = &responseWriter{}
 
 func (w *responseWriter) Header() http.Header {
-	return *new(http.Header)
+	if w.headers == nil {
+		w.headers = make(http.Header)
+	}
+	return w.headers
 }
 
 func (w *responseWriter) WriteHeader(int) {}
@@ -150,7 +156,7 @@ func (s *Server) handleStream(str quic.Stream) error {
 				panicked = true
 			}
 		}()
-		handler.ServeHTTP(&responseWriter{str}, req)
+		handler.ServeHTTP(&responseWriter{Writer: str}, req)
 	}()
 
 	if panicked {

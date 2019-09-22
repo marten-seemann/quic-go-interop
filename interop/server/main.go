@@ -26,7 +26,8 @@ func main() {
 	testcase := os.Getenv("TESTCASE")
 	var quicConf *quic.Config
 	switch testcase {
-	case "transfer":
+	case "handshake", "transfer":
+		// don't use Retries
 		quicConf = &quic.Config{
 			AcceptToken: func(_ net.Addr, _ *quic.Token) bool { return true },
 		}

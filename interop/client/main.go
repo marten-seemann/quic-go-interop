@@ -18,7 +18,7 @@ func main() {
 
 	testcase := os.Getenv("TESTCASE")
 	switch testcase {
-	case "transfer", "retry":
+	case "handshake", "transfer", "retry":
 	default:
 		fmt.Printf("unsupported test case: %s\n", testcase)
 		os.Exit(127)

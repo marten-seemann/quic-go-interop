@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/lucas-clemente/quic-go/http3"
+	"github.com/marten-seemann/quic-go-interop/http09"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -24,7 +24,7 @@ func main() {
 		os.Exit(127)
 	}
 
-	roundTripper := &http3.RoundTripper{
+	roundTripper := &http09.RoundTripper{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}
 	defer roundTripper.Close()

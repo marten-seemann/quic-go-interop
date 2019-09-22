@@ -34,32 +34,6 @@ func (w *responseWriter) Header() http.Header {
 
 func (w *responseWriter) WriteHeader(int) {}
 
-func ListenAndServeQUIC(addr, certFile, keyFile string, handler http.Handler) error {
-	server := &Server{
-		Server: &http.Server{
-			Addr:    addr,
-			Handler: handler,
-		},
-	}
-	var err error
-	certs := make([]tls.Certificate, 1)
-	certs[0], err = tls.LoadX509KeyPair(certFile, keyFile)
-	if err != nil {
-		return err
-	}
-	server.TLSConfig = &tls.Config{Certificates: certs}
-
-	udpAddr, err := net.ResolveUDPAddr("udp", addr)
-	if err != nil {
-		return err
-	}
-	conn, err := net.ListenUDP("udp", udpAddr)
-	if err != nil {
-		return err
-	}
-	return server.Serve(conn)
-}
-
 type Server struct {
 	*http.Server
 
@@ -74,6 +48,26 @@ func (s *Server) Close() error {
 	defer s.mutex.Unlock()
 
 	return s.listener.Close()
+}
+
+func (s *Server) ListenAndServeQUIC(certFile, keyFile string) error {
+	var err error
+	certs := make([]tls.Certificate, 1)
+	certs[0], err = tls.LoadX509KeyPair(certFile, keyFile)
+	if err != nil {
+		return err
+	}
+	s.TLSConfig = &tls.Config{Certificates: certs}
+
+	udpAddr, err := net.ResolveUDPAddr("udp", s.Addr)
+	if err != nil {
+		return err
+	}
+	conn, err := net.ListenUDP("udp", udpAddr)
+	if err != nil {
+		return err
+	}
+	return s.Serve(conn)
 }
 
 func (s *Server) Serve(conn net.PacketConn) error {

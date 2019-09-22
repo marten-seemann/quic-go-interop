@@ -51,6 +51,10 @@ func main() {
 }
 
 func runServer(quicConf *quic.Config) error {
+	server := http09.Server{
+		Server:     &http.Server{Addr: "0.0.0.0:443"},
+		QuicConfig: quicConf,
+	}
 	http.DefaultServeMux.Handle("/", http.FileServer(http.Dir("/www")))
-	return http09.ListenAndServeQUIC("0.0.0.0:443", path+"/cert.pem", path+"/key.pem", nil)
+	return server.ListenAndServeQUIC(path+"/cert.pem", path+"/key.pem")
 }

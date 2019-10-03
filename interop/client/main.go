@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/lucas-clemente/quic-go/http3"
 	"github.com/marten-seemann/quic-go-interop/http09"
 	"golang.org/x/sync/errgroup"
 )
@@ -26,17 +27,31 @@ func main() {
 	urls := flag.Args()
 
 	testcase := os.Getenv("TESTCASE")
+
+	var useH3 bool
 	switch testcase {
 	case "handshake", "transfer", "retry":
+	case "http3":
+		useH3 = true
 	default:
 		fmt.Printf("unsupported test case: %s\n", testcase)
 		os.Exit(127)
 	}
 
-	roundTripper := &http09.RoundTripper{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	var roundTripper http.RoundTripper
+	if useH3 {
+		r := &http3.RoundTripper{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		}
+		defer r.Close()
+		roundTripper = r
+	} else {
+		r := &http09.RoundTripper{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		}
+		defer r.Close()
+		roundTripper = r
 	}
-	defer roundTripper.Close()
 
 	var g errgroup.Group
 	for _, u := range urls {

@@ -126,9 +126,9 @@ func (s *Server) handleStream(str quic.Stream) error {
         }
         log.Printf("split[0]=%s", split[0])
         u, err := url.Parse(split[0])
-	if err != nil {
-		return err
-	}
+        if err != nil {
+                return err
+        }
 	u.Scheme = "https"
 
 	req := &http.Request{

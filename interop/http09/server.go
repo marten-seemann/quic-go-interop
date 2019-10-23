@@ -119,7 +119,7 @@ func (s *Server) handleStream(str quic.Stream) error {
 	}
 
 	split := strings.Split(request[4:], " ")
-	if len(split) > 2  || (len(split) == 2 && split[1] != "HTTP/0.9"){
+	if len(split) > 2  || (len(split) == 2 && split[1] != "HTTP/0.9") {
 		return nil
 	}
 	u, err := url.Parse(split[0])

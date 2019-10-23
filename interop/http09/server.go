@@ -119,16 +119,13 @@ func (s *Server) handleStream(str quic.Stream) error {
 	}
 
 	split := strings.Split(request[4:], " ")
-        log.Printf("len(split)=%d", len(split))
-
-        if len(split) > 2  || (len(split) == 2 && split[1] != "HTTP/0.9"){
-                return nil
-        }
-        log.Printf("split[0]=%s", split[0])
-        u, err := url.Parse(split[0])
-        if err != nil {
-                return err
-        }
+	if len(split) > 2  || (len(split) == 2 && split[1] != "HTTP/0.9"){
+		return nil
+	}
+	u, err := url.Parse(split[0])
+	if err != nil {
+		return err
+	}
 	u.Scheme = "https"
 
 	req := &http.Request{
